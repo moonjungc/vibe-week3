@@ -73,6 +73,71 @@
     .favorites li::before {
       content: "🌸";
     }
+
+    .quote-section {
+      margin-top: 24px;
+      background: #fdf6fa;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #f9e8f0;
+    }
+
+    .quote-title {
+      color: #7a5c7e;
+      font-size: 1rem;
+      margin: 0 0 14px;
+      font-weight: 600;
+    }
+
+    .quote-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .quote-btn {
+      background: #ffffff;
+      border: 1.5px solid #ffd6e8;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: #6b6180;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .quote-btn:hover {
+      background: #ffe4ec;
+      border-color: #f7a8c4;
+      transform: translateY(-2px);
+    }
+
+    .quote-btn.active {
+      background: #7a5c7e;
+      color: #ffffff;
+      border-color: #7a5c7e;
+      box-shadow: 0 4px 12px rgba(122, 92, 126, 0.25);
+    }
+
+    .quote-display {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #5a4b66;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid #f0e6f5;
+      transition: opacity 0.25s ease;
+    }
   </style>
 </head>
 <body>
@@ -85,6 +150,32 @@
       <li>주말 카페 투어</li>
       <li>고양이 영상 보기</li>
     </ul>
+    <div class="quote-section">
+      <h2 class="quote-title">오늘 필요한 한 마디</h2>
+      <div class="quote-buttons">
+        <button type="button" class="quote-btn" data-quote="포기하지 않는 한 실패는 없습니다. 두려워 말고 도전해보세요! 💪">💪 용기</button>
+        <button type="button" class="quote-btn" data-quote="작은 성공들이 모여 큰 변화를 만듭니다. 오늘도 성장하고 있어요! 🌱">🌱 성장</button>
+        <button type="button" class="quote-btn" data-quote="당신의 노력은 반드시 빛을 발할 거예요. 언제나 응원합니다! 🌈">🌈 응원</button>
+      </div>
+      <div class="quote-display" id="quoteDisplay">버튼을 눌러 응원 문구를 확인해보세요!</div>
+    </div>
   </div>
+  <script>
+    const buttons = document.querySelectorAll('.quote-btn');
+    const quoteDisplay = document.getElementById('quoteDisplay');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        quoteDisplay.style.opacity = '0';
+        setTimeout(() => {
+          quoteDisplay.textContent = button.getAttribute('data-quote');
+          quoteDisplay.style.opacity = '1';
+        }, 150);
+      });
+    });
+  </script>
 </body>
 </html>
