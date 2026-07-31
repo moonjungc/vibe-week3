@@ -1,0 +1,46 @@
+name: Daily Hello
+
+on:
+  schedule:
+    # 매일 09:00 KST(UTC+9) = 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-quote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 무작위 응원 문구 선택
+        id: quote
+        run: |
+          QUOTE=$(shuf -n 1 quotes.txt)
+          echo "quote=$QUOTE" >> "$GITHUB_OUTPUT"
+
+      - name: README.md 오늘의 한마디 갱신
+        env:
+          QUOTE: ${{ steps.quote.outputs.quote }}
+        run: |
+          awk -v q="$QUOTE" '
+            /<!-- 오늘의 한마디:START -->/ { print; print q; skip=1; next }
+            /<!-- 오늘의 한마디:END -->/   { skip=0 }
+            !skip { print }
+          ' README.md > README.md.tmp
+          mv README.md.tmp README.md
+
+      - name: 변경 사항 커밋 및 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "변경 사항 없음, 커밋 생략"
+          else
+            git commit -m "docs: 오늘의 한마디 갱신"
+            git push
+          fi
