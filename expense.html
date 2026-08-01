@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>미니 가계부 분석기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffe4ec 0%, #e6e6fa 50%, #d6f5f0 100%);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: #fffafc;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(200, 170, 220, 0.35);
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      color: #7a5c7e;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .intro {
+      color: #806a87;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .input-row input {
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #5a4b66;
+      border: 1.5px solid #f0d6e5;
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      background: #ffffff;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-row input:focus {
+      border-color: #f7a8c4;
+    }
+
+    #itemName {
+      flex: 1.4;
+      min-width: 0;
+    }
+
+    #itemAmount {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #addBtn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: #f7a8c4;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      white-space: nowrap;
+    }
+
+    #addBtn:hover {
+      background: #f291b6;
+      transform: translateY(-1px);
+    }
+
+    .expense-list {
+      list-style: none;
+      margin: 0 0 20px;
+      padding: 0;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .expense-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #f3f0fb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      color: #6b6180;
+      font-size: 0.9rem;
+    }
+
+    .expense-item-name {
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .expense-item-amount {
+      font-weight: 600;
+      color: #7a5c7e;
+      white-space: nowrap;
+    }
+
+    .delete-btn {
+      background: #ffffff;
+      border: 1.5px solid #f0d6e5;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      color: #c98fb0;
+      font-size: 0.85rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: #ffe4ec;
+      border-color: #f7a8c4;
+    }
+
+    .empty-message {
+      text-align: center;
+      color: #b3a2bb;
+      font-size: 0.85rem;
+      padding: 20px 0;
+    }
+
+    .total-section {
+      background: #fdf6fa;
+      border-radius: 16px;
+      padding: 16px 20px;
+      border: 1px solid #f9e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .total-label {
+      color: #7a5c7e;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .total-amount {
+      color: #d17ba5;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>미니 가계부 분석기</h1>
+    <p class="intro">오늘 쓴 돈, 항목별로 가볍게 기록해보세요 🌸</p>
+
+    <div class="input-row">
+      <input type="text" id="itemName" placeholder="항목명 (예: 커피)">
+      <input type="number" id="itemAmount" placeholder="금액">
+      <button type="button" id="addBtn">추가</button>
+    </div>
+
+    <ul class="expense-list" id="expenseList">
+      <li class="empty-message" id="emptyMessage">아직 등록된 항목이 없어요</li>
+    </ul>
+
+    <div class="total-section">
+      <span class="total-label">합계</span>
+      <span class="total-amount" id="totalAmount">0원</span>
+    </div>
+  </div>
+
+  <script>
+    const itemNameInput = document.getElementById('itemName');
+    const itemAmountInput = document.getElementById('itemAmount');
+    const addBtn = document.getElementById('addBtn');
+    const expenseList = document.getElementById('expenseList');
+    const emptyMessage = document.getElementById('emptyMessage');
+    const totalAmount = document.getElementById('totalAmount');
+
+    let expenses = [];
+
+    function formatWon(value) {
+      return value.toLocaleString('ko-KR') + '원';
+    }
+
+    function render() {
+      expenseList.querySelectorAll('li:not(.empty-message)').forEach(li => li.remove());
+      emptyMessage.style.display = expenses.length === 0 ? 'block' : 'none';
+
+      expenses.forEach(expense => {
+        const li = document.createElement('li');
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'expense-item-name';
+        nameSpan.textContent = expense.name;
+
+        const amountSpan = document.createElement('span');
+        amountSpan.className = 'expense-item-amount';
+        amountSpan.textContent = formatWon(expense.amount);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '✕';
+        deleteBtn.addEventListener('click', () => {
+          expenses = expenses.filter(item => item.id !== expense.id);
+          render();
+        });
+
+        li.appendChild(nameSpan);
+        li.appendChild(amountSpan);
+        li.appendChild(deleteBtn);
+        expenseList.appendChild(li);
+      });
+
+      const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      totalAmount.textContent = formatWon(total);
+    }
+
+    function addExpense() {
+      const name = itemNameInput.value.trim();
+      const amount = Number(itemAmountInput.value);
+
+      if (!name || !itemAmountInput.value || isNaN(amount) || amount <= 0) {
+        return;
+      }
+
+      expenses.push({ id: Date.now(), name, amount });
+      itemNameInput.value = '';
+      itemAmountInput.value = '';
+      itemNameInput.focus();
+      render();
+    }
+
+    addBtn.addEventListener('click', addExpense);
+    [itemNameInput, itemAmountInput].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          addExpense();
+        }
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
