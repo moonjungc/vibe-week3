@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>security-check 스킬 실습용 취약점 샘플 (실제 서비스 아님)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <!--
+    이 파일은 security-check 스킬이 4가지 항목을 제대로 탐지하는지 검증하기 위한
+    의도적인 취약점 샘플이다. 실제 서비스 코드가 아니며, 여기 있는 키/비밀번호는
+    전부 가짜 값이다. 절대 실제 프로젝트 코드에 이런 패턴을 남기지 말 것.
+  -->
+  <div id="greeting"></div>
+  <button id="loginBtn">로그인</button>
+
+  <script>
+    // ① 하드코딩된 비밀번호
+    const ADMIN_PASSWORD = "SuperSecret123!";
+
+    // ④ 하드코딩된 API 키
+    const OPENAI_API_KEY = "sk-live-fake1234567890abcdefgh";
+
+    // ② innerHTML XSS — URL 파라미터를 이스케이프 없이 그대로 삽입
+    const nameParam = new URLSearchParams(location.search).get('name');
+    document.getElementById('greeting').innerHTML = "안녕하세요, " + nameParam + "님!";
+
+    // console.log 민감정보 노출 (참고용, 이번 요청의 4항목에는 없지만 스킬의 4관점 중 하나)
+    console.log('로그인 시도', { password: ADMIN_PASSWORD, apiKey: OPENAI_API_KEY });
+
+    // ③ http:// 평문 외부 요청
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      fetch('http://api.example.com/login', {
+        method: 'POST',
+        body: JSON.stringify({ password: ADMIN_PASSWORD })
+      });
+    });
+  </script>
+</body>
+</html>
