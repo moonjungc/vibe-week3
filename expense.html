@@ -78,20 +78,33 @@
     #addBtn {
       font-family: inherit;
       font-size: 0.9rem;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       color: #ffffff;
-      background: #f7a8c4;
+      background: linear-gradient(135deg, #cfa8ff 0%, #bb8cff 55%, #a06bff 100%);
       border: none;
       border-radius: 12px;
-      padding: 10px 16px;
+      padding: 10px 22px;
       cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 12px rgba(187, 140, 255, 0.4);
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
       white-space: nowrap;
     }
 
     #addBtn:hover {
-      background: #f291b6;
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #d9baff 0%, #ab72ff 55%, #8c4dff 100%);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(171, 114, 255, 0.5);
+    }
+
+    #addBtn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 8px rgba(187, 140, 255, 0.4);
+    }
+
+    #addBtn:focus-visible {
+      outline: 2px solid #ab72ff;
+      outline-offset: 2px;
     }
 
     .expense-list {
@@ -140,12 +153,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 6px rgba(201, 143, 176, 0.25);
       transition: all 0.2s ease;
     }
 
     .delete-btn:hover {
-      background: #ffe4ec;
-      border-color: #f7a8c4;
+      background: #bb8cff;
+      border-color: #bb8cff;
+      color: #ffffff;
+      transform: scale(1.15) rotate(90deg);
+      box-shadow: 0 4px 10px rgba(187, 140, 255, 0.45);
+    }
+
+    .delete-btn:active {
+      transform: scale(0.95);
+    }
+
+    .delete-btn:focus-visible {
+      outline: 2px solid #ab72ff;
+      outline-offset: 2px;
     }
 
     .empty-message {
@@ -186,11 +212,11 @@
     <div class="input-row">
       <input type="text" id="itemName" placeholder="항목명 (예: 커피)">
       <input type="number" id="itemAmount" placeholder="금액">
-      <button type="button" id="addBtn">추가</button>
+      <button type="button" id="addBtn">＋ 추가</button>
     </div>
 
     <ul class="expense-list" id="expenseList">
-      <li class="empty-message" id="emptyMessage">아직 등록된 항목이 없어요</li>
+      <li class="empty-message" id="emptyMessage">아직 등록된 지출이 없어요. 첫 항목을 추가해보세요!</li>
     </ul>
 
     <div class="total-section">
